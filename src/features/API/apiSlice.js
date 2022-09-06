@@ -6,6 +6,10 @@ export const apiSlice = createApi({
         baseUrl: 'https://lws-server-anuapan9.herokuapp.com/',
     }),
     endpoints: (builder) => ({
-
+        getVideos: builder.query(
+            { query: () => '/videos' }
+        )
     })
-}) 
+})
+
+export const { useGetVideosQuery } = apiSlice
