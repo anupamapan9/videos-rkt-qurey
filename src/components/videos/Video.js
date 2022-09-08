@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import authorImage from "../../assets/author.png";
 
 export default function Video({ video }) {
     const { id, title, author, avatar, date, duration, views, thumbnail } = video

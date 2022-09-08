@@ -7,7 +7,10 @@ export const apiSlice = createApi({
     }),
     endpoints: (builder) => ({
         getVideos: builder.query(
-            { query: () => '/videos' }
+            {
+                query: () => '/videos',
+                keepUnusedDataFor: 600,
+            }
         ),
         getVideo: builder.query({
             query: (videoId) => `/videos/${videoId}`
@@ -20,8 +23,15 @@ export const apiSlice = createApi({
                 return queryString;
             },
         }),
+        addVideo: builder.mutation({
+            query: (data) => ({
+                url: `/videos`,
+                method: 'POST',
+                body: data
+            })
+        }),
     })
 })
 
-export const { useGetVideosQuery, useGetVideoQuery, useGetRelatedVideosQuery } =
+export const { useGetVideosQuery, useGetVideoQuery, useGetRelatedVideosQuery, useAddVideoMutation } =
     apiSlice;
