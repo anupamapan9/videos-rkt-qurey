@@ -5,7 +5,7 @@ export const apiSlice = createApi({
     baseQuery: fetchBaseQuery({
         baseUrl: 'https://lws-server-anuapan9.herokuapp.com/',
     }),
-    tagTypes: ["Videos"],
+    tagTypes: ["Videos", "Video", "RelatedVideos"],
     endpoints: (builder) => ({
         getVideos: builder.query(
             {
@@ -15,8 +15,13 @@ export const apiSlice = createApi({
             }
         ),
         getVideo: builder.query({
-            query: (videoId) => `/videos/${videoId}`
-        }),
+            query: (videoId) => `/videos/${videoId}`,
+            providesTags: (result, error, arg) => [
+                "Videos",
+                { type: "Video", id: arg }
+            ]
+        }
+        ),
         getRelatedVideos: builder.query({
             query: ({ id, title }) => {
                 const tags = title.split(" ");
@@ -24,6 +29,10 @@ export const apiSlice = createApi({
                 const queryString = `/videos?${likes.join("&")}&_limit=4`;
                 return queryString;
             },
+            providesTags: (result, error, arg) => [
+                "Videos",
+                { type: "RelatedVideos", id: arg.id }
+            ]
         }),
         addVideo: builder.mutation({
             query: (data) => ({
@@ -33,8 +42,29 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: ['Videos']
         }),
+        editVideo: builder.mutation({
+            query: ({ id, data }) => ({
+                url: `/videos/${id}`,
+                method: 'PATCH',
+                body: data
+            }),
+            invalidatesTags: (result, error, arg) => [
+                "Videos",
+                { type: "Video", id: arg.id },
+                { type: "RelatedVideos", id: arg.id }
+            ]
+        }),
+        deleteVideo: builder.mutation({
+            query: (id) => ({
+                url: `/videos/${id}`,
+                method: 'DELETE'
+            }),
+            invalidatesTags: ["Videos"]
+        }),
+
     })
+
 })
 
-export const { useGetVideosQuery, useGetVideoQuery, useGetRelatedVideosQuery, useAddVideoMutation } =
+export const { useGetVideosQuery, useGetVideoQuery, useGetRelatedVideosQuery, useAddVideoMutation, useEditVideoMutation, useDeleteVideoMutation } =
     apiSlice;
